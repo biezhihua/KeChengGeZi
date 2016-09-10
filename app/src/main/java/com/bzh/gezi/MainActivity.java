@@ -2,6 +2,7 @@ package com.bzh.gezi;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         RecyclerView recyclerView = ((RecyclerView) findViewById(R.id.recycler));
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefreshlayout);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         final FibonacciDataSource fibonacciDataSource = new FibonacciDataSource();
@@ -67,6 +69,13 @@ public class MainActivity extends AppCompatActivity {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected void onPreExecute() {
+                        super.onPreExecute();
+                        swipeRefreshLayout.setRefreshing(true);
+                    }
+
                     @Override
                     protected Void doInBackground(Void... voids) {
                         fibonacciDataSource.addNewData(50);
@@ -77,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     protected void onPostExecute(Void aVoid) {
                         super.onPostExecute(aVoid);
                         adapter.notifyDataSetChanged();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 }.execute();
             }
@@ -169,9 +179,11 @@ public class MainActivity extends AppCompatActivity {
         private BigInteger primary = new BigInteger("0");
         private BigInteger secondary = new BigInteger("0");
 
+        // 固定值
         private BigInteger big_value_1 = new BigInteger("1");
         private BigInteger big_value_4 = new BigInteger("4");
 
+        // 构造默认数据
         public FibonacciDataSource() {
             for (int i = 1; i <= DEFAULT_DATA_SOURCE_SIZE; i++) {
                 current_row = i;
