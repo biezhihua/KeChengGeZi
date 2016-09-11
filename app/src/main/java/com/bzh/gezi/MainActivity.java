@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
+                // AsyncTask是串行执行,不会导致斐波那契数列的结果乱序
                 new AsyncTask<Void, Void, Void>() {
 
                     @Override
